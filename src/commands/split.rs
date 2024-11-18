@@ -1,3 +1,4 @@
+use std::error::Error;
 use clap::{Arg, ArgMatches, Command};
 
 pub fn command() -> Command {
@@ -5,27 +6,27 @@ pub fn command() -> Command {
         .about("Divide um arquivo CSV em partes menores")
         .arg(
             Arg::new("input")
-                .about("Arquivo CSV de entrada")
+                .help("Arquivo CSV de entrada")
                 .required(true),
         )
         .arg(
             Arg::new("lines")
-                .about("Número de linhas por arquivo")
+                .help("Número de linhas por arquivo")
                 .short('l')
                 .long("lines")
-                .takes_value(true)
                 .required(true),
         )
 }
 
-pub fn run(matches: &ArgMatches) {
-    let input = matches.value_of("input").unwrap();
+pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>>{
+    let input = matches.get_one::<String>("input").unwrap();
     let lines: usize = matches
-        .value_of("lines")
+        .get_one::<String>("lines")
         .unwrap()
         .parse()
         .expect("Número inválido");
 
     println!("Dividindo arquivo: {} em partes de {} linhas", input, lines);
     // Implementar lógica de divisão...
+    Ok(())
 }
