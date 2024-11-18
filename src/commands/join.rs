@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use clap::{Arg, ArgMatches, Command};
 
 pub fn command() -> Command {
@@ -16,7 +18,7 @@ pub fn command() -> Command {
         )
 }
 
-pub fn run(matches: &ArgMatches) {
+pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>>{
     // Usando `get_many` para capturar múltiplos valores para o argumento `inputs`
     let inputs: Vec<String> = matches.get_many::<String>("inputs")
         .unwrap()
@@ -27,4 +29,6 @@ pub fn run(matches: &ArgMatches) {
 
     println!("Unindo arquivos: {:?} em {}", inputs, output);
     // Implementar lógica de união...
+
+    Ok(())
 }
