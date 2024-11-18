@@ -9,7 +9,7 @@ pub fn command() -> Command {
             Arg::new("inputs")
                 .help("Arquivos CSV de entrada")
                 .required(true)
-                .num_args(1..)  // Permite múltiplos arquivos de entrada
+                .num_args(1..), // Permite múltiplos arquivos de entrada
         )
         .arg(
             Arg::new("output")
@@ -18,9 +18,10 @@ pub fn command() -> Command {
         )
 }
 
-pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>>{
+pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
     // Usando `get_many` para capturar múltiplos valores para o argumento `inputs`
-    let inputs: Vec<String> = matches.get_many::<String>("inputs")
+    let inputs: Vec<String> = matches
+        .get_many::<String>("inputs")
         .unwrap()
         .cloned()
         .collect();

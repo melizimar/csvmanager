@@ -1,9 +1,9 @@
 mod commands; // Importa os subcomandos
 
-use std::error::Error;
 use clap::{Arg, Command};
+use std::error::Error;
 
-fn main() -> Result<(), Box<dyn Error>>{
+fn main() -> Result<(), Box<dyn Error>> {
     let matches = Command::new("CSV MANAGER")
         .version("1.0")
         .author("Matheus <melizimar@gmail.com.com>")

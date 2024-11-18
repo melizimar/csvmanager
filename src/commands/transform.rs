@@ -1,5 +1,5 @@
-use std::error::Error;
 use clap::{Arg, ArgMatches, Command};
+use std::error::Error;
 
 pub fn command() -> Command {
     Command::new("transform")
@@ -27,7 +27,7 @@ pub fn command() -> Command {
         )
 }
 
-pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>>{
+pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
     let input = matches.get_one::<String>("input").unwrap();
     let output = matches.get_one::<String>("output").unwrap();
     let uppercase = matches.get_flag("uppercase");
