@@ -1,8 +1,9 @@
 mod commands; // Importa os subcomandos
 
+use std::error::Error;
 use clap::{Arg, Command};
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>>{
     let matches = Command::new("CSV MANAGER")
         .version("1.0")
         .author("Matheus <melizimar@gmail.com.com>")
@@ -14,9 +15,11 @@ fn main() {
 
     // Processa o subcomando invocado
     match matches.subcommand() {
-        Some(("transform", sub_matches)) => commands::transform::run(sub_matches),
-        Some(("splitter", sub_matches)) => commands::split::run(sub_matches),
-        Some(("join", sub_matches)) => commands::join::run(sub_matches),
+        Some(("transform", sub_matches)) => commands::transform::run(sub_matches)?,
+        Some(("splitter", sub_matches)) => commands::split::run(sub_matches)?,
+        Some(("join", sub_matches)) => commands::join::run(sub_matches)?,
         _ => println!("Use --help para mais informações."),
     }
+
+    Ok(())
 }
