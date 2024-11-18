@@ -1,3 +1,4 @@
+use std::error::Error;
 use clap::{Arg, ArgMatches, Command};
 
 pub fn command() -> Command {
@@ -7,29 +8,29 @@ pub fn command() -> Command {
             Arg::new("input")
                 .short('i')
                 .long("input")
-                .about("Arquivo CSV de entrada")
+                .help("Arquivo CSV de entrada")
                 .required(true),
         )
         .arg(
             Arg::new("output")
                 .short('o')
                 .long("output")
-                .about("Arquivo CSV de saída")
+                .help("Arquivo CSV de saída")
                 .required(true),
         )
         .arg(
             Arg::new("uppercase")
                 .short('u')
                 .long("uppercase")
-                .about("Converte todas as letras para maiúsculas")
-                .takes_value(false),
+                .help("Converte todas as letras para maiúsculas")
+                .required(false),
         )
 }
 
-pub fn run(matches: &ArgMatches) {
-    let input = matches.value_of("input").unwrap();
-    let output = matches.value_of("output").unwrap();
-    let uppercase = matches.is_present("uppercase");
+pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>>{
+    let input = matches.get_one::<String>("input").unwrap();
+    let output = matches.get_one::<String>("output").unwrap();
+    let uppercase = matches.get_flag("uppercase");
 
     println!("Transformando arquivo: {}", input);
     println!("Arquivo de saída: {}", output);
@@ -38,4 +39,6 @@ pub fn run(matches: &ArgMatches) {
         println!("Transformação: Maiúsculas ativadas!");
         // Chamar função para processar...
     }
+
+    Ok(())
 }
