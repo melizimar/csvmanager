@@ -5,20 +5,25 @@ pub fn command() -> Command {
         .about("Une dois ou mais arquivos CSV em um único arquivo")
         .arg(
             Arg::new("inputs")
-                .about("Arquivos CSV de entrada")
+                .help("Arquivos CSV de entrada")
                 .required(true)
-                .multiple_values(true),
+                .num_args(1..)  // Permite múltiplos arquivos de entrada
         )
         .arg(
             Arg::new("output")
-                .about("Arquivo CSV de saída")
+                .help("Arquivo CSV de saída")
                 .required(true),
         )
 }
 
 pub fn run(matches: &ArgMatches) {
-    let inputs: Vec<_> = matches.values_of("inputs").unwrap().collect();
-    let output = matches.value_of("output").unwrap();
+    // Usando `get_many` para capturar múltiplos valores para o argumento `inputs`
+    let inputs: Vec<String> = matches.get_many::<String>("inputs")
+        .unwrap()
+        .cloned()
+        .collect();
+
+    let output = matches.get_one::<String>("output").unwrap();
 
     println!("Unindo arquivos: {:?} em {}", inputs, output);
     // Implementar lógica de união...
