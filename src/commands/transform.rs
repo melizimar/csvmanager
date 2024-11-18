@@ -5,19 +5,23 @@ pub fn command() -> Command {
         .about("Realiza transformações no arquivo CSV")
         .arg(
             Arg::new("input")
+                .short('i')
+                .long("input")
                 .about("Arquivo CSV de entrada")
                 .required(true),
         )
         .arg(
             Arg::new("output")
+                .short('o')
+                .long("output")
                 .about("Arquivo CSV de saída")
                 .required(true),
         )
         .arg(
             Arg::new("uppercase")
-                .about("Converte todas as letras para maiúsculas")
                 .short('u')
                 .long("uppercase")
+                .about("Converte todas as letras para maiúsculas")
                 .takes_value(false),
         )
 }

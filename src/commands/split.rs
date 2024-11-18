@@ -20,7 +20,11 @@ pub fn command() -> Command {
 
 pub fn run(matches: &ArgMatches) {
     let input = matches.value_of("input").unwrap();
-    let lines: usize = matches.value_of("lines").unwrap().parse().expect("Número inválido");
+    let lines: usize = matches
+        .value_of("lines")
+        .unwrap()
+        .parse()
+        .expect("Número inválido");
 
     println!("Dividindo arquivo: {} em partes de {} linhas", input, lines);
     // Implementar lógica de divisão...

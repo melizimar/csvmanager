@@ -1,15 +1,15 @@
 mod commands; // Importa os subcomandos
 
-use clap::{Command, Arg};
+use clap::{Arg, Command};
 
 fn main() {
-    let matches = Command::new("CSV CLI")
+    let matches = Command::new("CSV MANAGER")
         .version("1.0")
-        .author("Seu Nome <seuemail@exemplo.com>")
+        .author("Matheus <melizimar@gmail.com.com>")
         .about("Ferramenta CLI para manipulação de arquivos CSV")
         .subcommand(commands::transform::command()) // Subcomando "transform"
-        .subcommand(commands::split::command())  // Subcomando "splitter"
-        .subcommand(commands::join::command())      // Subcomando "join"
+        .subcommand(commands::split::command()) // Subcomando "splitter"
+        .subcommand(commands::join::command()) // Subcomando "join"
         .get_matches();
 
     // Processa o subcomando invocado
