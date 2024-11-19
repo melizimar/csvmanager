@@ -2,7 +2,6 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::process;
 
-
 use clap::{Arg, ArgMatches, Command};
 
 pub fn command() -> Command {
@@ -73,23 +72,22 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
         None => None,
     };
 
-
     match uppercase {
         Some(fields) => println!("Campos a serem transformados em uppercase {:?}", fields),
-        None => ()
+        None => (),
     }
 
     match lowercase {
         Some(fields) => println!("Campos a serem transformados em lowercase {:?}", fields),
-        None => ()
+        None => (),
     }
 
     match normalize {
         Some(fields) => println!("Campos a serem transformados em normalize {:?}", fields),
-        None => ()
+        None => (),
     }
 
-    if !input.exists(){
+    if !input.exists() {
         println!("O arquivo não existe, por gentileza informe um arquivo válido.");
         process::exit(1);
     }
