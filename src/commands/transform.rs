@@ -20,9 +20,22 @@ pub fn command() -> Command {
         )
         .arg(
             Arg::new("uppercase")
-                .short('u')
                 .long("uppercase")
-                .help("Converte todas as letras para maiúsculas")
+                .help("Converte todas as letras dos campos informados para maiúsculas")
+                .num_args(1..)
+                .required(false),
+        )
+        .arg(
+            Arg::new("lowercase")
+                .long("lowercase")
+                .help("Converte todas as letras dos campos informados para minúsculas")
+                .num_args(1..)
+                .required(false),
+        )
+        .arg(
+            Arg::new("normalize")
+                .long("normalize")
+                .help("Remove todos os acentos das letras dos campos informados")
                 .num_args(1..)
                 .required(false),
         )
@@ -32,18 +45,14 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
     let input = matches.get_one::<String>("input").unwrap();
     let output = matches.get_one::<String>("output").unwrap();
     //let uppercase = matches.get_flag("uppercase");
-    let uppercase_fields: Vec<String> = matches.get_many("uppercase")
-        .unwrap()
-        .cloned()
-        .collect();
-
-    println!("Transformando arquivo: {}", input);
-    println!("Arquivo de saída: {}", output);
+    let uppercase_fields: Option<Vec<String>> = match matches.get_many::<String>("uppercase") {
+        Some(values) => Some(values.cloned().collect()),
+        None => None,
+    };
 
     match uppercase_fields {
-        Ok(vec) => println!("Transformação: Maiúsculas ativadas! {:?}", vec),
-        _ => println!("Sem valor"),
-        // Chamar função para processar...
+        Some(fields) => println!("Campos a serem transformados em UpperCase {:?}", fields),
+        None => println!("Uppercase não informado")
     }
 
     Ok(())
