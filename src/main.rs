@@ -1,6 +1,6 @@
 mod commands; // Importa os subcomandos
 
-use clap::{Arg, Command};
+use clap::{/*Arg,*/ Command};
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {

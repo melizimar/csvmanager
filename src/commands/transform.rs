@@ -1,5 +1,9 @@
-use clap::{Arg, ArgMatches, Command};
 use std::error::Error;
+use std::path::{Path, PathBuf};
+use std::process;
+
+
+use clap::{Arg, ArgMatches, Command};
 
 pub fn command() -> Command {
     Command::new("transform")
@@ -17,6 +21,14 @@ pub fn command() -> Command {
                 .long("output")
                 .help("Arquivo CSV de saída")
                 .required(true),
+        )
+        .arg(
+            Arg::new("delimiter")
+                .short('d')
+                .long("delimiter")
+                .help("Delimitador do arquivo csv")
+                .default_value(";")
+                .required(false),
         )
         .arg(
             Arg::new("uppercase")
@@ -42,17 +54,44 @@ pub fn command() -> Command {
 }
 
 pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
-    let input = matches.get_one::<String>("input").unwrap();
-    let output = matches.get_one::<String>("output").unwrap();
-    //let uppercase = matches.get_flag("uppercase");
-    let uppercase_fields: Option<Vec<String>> = match matches.get_many::<String>("uppercase") {
+    let input = matches.get_one::<PathBuf>("input").unwrap();
+    let output = matches.get_one::<PathBuf>("output").unwrap();
+    let delimiter = matches.get_one::<char>("delimiter").unwrap();
+
+    let uppercase: Option<Vec<String>> = match matches.get_many::<String>("uppercase") {
         Some(values) => Some(values.cloned().collect()),
         None => None,
     };
 
-    match uppercase_fields {
-        Some(fields) => println!("Campos a serem transformados em UpperCase {:?}", fields),
-        None => println!("Uppercase não informado")
+    let lowercase: Option<Vec<String>> = match matches.get_many::<String>("lowercase") {
+        Some(values) => Some(values.cloned().collect()),
+        None => None,
+    };
+
+    let normalize: Option<Vec<String>> = match matches.get_many::<String>("normalize") {
+        Some(values) => Some(values.cloned().collect()),
+        None => None,
+    };
+
+
+    match uppercase {
+        Some(fields) => println!("Campos a serem transformados em uppercase {:?}", fields),
+        None => ()
+    }
+
+    match lowercase {
+        Some(fields) => println!("Campos a serem transformados em lowercase {:?}", fields),
+        None => ()
+    }
+
+    match normalize {
+        Some(fields) => println!("Campos a serem transformados em normalize {:?}", fields),
+        None => ()
+    }
+
+    if !input.exists(){
+        println!("O arquivo não existe, por gentileza informe um arquivo válido.");
+        process::exit(1);
     }
 
     Ok(())
