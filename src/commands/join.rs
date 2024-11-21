@@ -1,5 +1,5 @@
 use std::error::Error;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process;
 use std::thread;
 use std::time::Duration;
@@ -19,32 +19,31 @@ pub fn command() -> Command {
                 .num_args(2..)
                 .required(true),
         )
-    .arg(
-        Arg::new("output")
-            .short('o')
-            .long("output")
-            .help("Arquivo CSV de saída")
-            //.value_name("FILE")
-            .required(true),
-    )
-    .arg(
-        Arg::new("delimiter")
-            .short('d')
-            .long("delimiter")
-            .help("Delimitador do arquivo csv")
-            .default_value(";")
-            .required(false),
-    )
+        .arg(
+            Arg::new("output")
+                .short('o')
+                .long("output")
+                .help("Arquivo CSV de saída")
+                //.value_name("FILE")
+                .required(true),
+        )
+        .arg(
+            Arg::new("delimiter")
+                .short('d')
+                .long("delimiter")
+                .help("Delimitador do arquivo csv")
+                .default_value(";")
+                .required(false),
+        )
 }
 
 pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
-    let inputs: Option<Vec<String>> = match matches.get_many::<String>("inputs") {
-        Some(values) => Some(values.cloned().collect()),
-        None => None,
-    };
+    let inputs: Option<Vec<String>> = matches
+        .get_many::<String>("inputs")
+        .map(|values| values.cloned().collect());
 
-    let output = matches.get_one::<String>("output").unwrap();
-    let delimiter = matches.get_one::<String>("delimiter").unwrap();
+    let _output = matches.get_one::<String>("output").unwrap();
+    let _delimiter = matches.get_one::<String>("delimiter").unwrap();
 
     // Valida se os caminhos informados no parametro inputs são caminhos válidos
     if let Some(paths) = &inputs {
@@ -67,7 +66,7 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
             .unwrap(),
     );
 
-    for i in 1..10 {
+    for _i in 1..10 {
         progress_bar.inc(1);
         thread::sleep(Duration::from_millis(100));
     }
