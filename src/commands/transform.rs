@@ -15,7 +15,7 @@ pub fn command() -> Command {
                 .short('i')
                 .long("input")
                 .help("Arquivo CSV de entrada")
-                .value_name("FILE")
+                //.value_name("FILE")
                 .required(true),
         )
         .arg(
@@ -57,12 +57,9 @@ pub fn command() -> Command {
 }
 
 pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
-
-    println!("{:#?}", matches);
-
-    let input = matches.get_one::<PathBuf>("input").unwrap();
-    let output = matches.get_one::<PathBuf>("output").unwrap();
-    let delimiter = matches.get_one::<char>("delimiter").unwrap();
+    let input = matches.get_one::<String>("input").unwrap();
+    let output = matches.get_one::<String>("output").unwrap();
+    let delimiter = matches.get_one::<String>("delimiter").unwrap();
 
     let uppercase: Option<Vec<String>> = match matches.get_many::<String>("uppercase") {
         Some(values) => Some(values.cloned().collect()),
@@ -94,13 +91,12 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
         None => (),
     }
 
-    if !input.exists() {
+    if !PathBuf::from(input).exists() {
         println!("O arquivo não existe, por gentileza informe um arquivo válido.");
         process::exit(1);
     }
 
     // Processamento
-    // Criar barra de progresso
     let progress_bar = ProgressBar::new(10);
     progress_bar.set_style(
         ProgressStyle::default_bar()
@@ -110,13 +106,12 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
             .unwrap(),
     );
 
-    for i in 1..10{
+    for i in 1..10 {
         progress_bar.inc(1);
-        thread::sleep(Duration::from_millis(500));
+        thread::sleep(Duration::from_millis(100));
     }
 
-    progress_bar.finish_with_message("Todo o arquivo foi foi processado.");
-
+    progress_bar.finish_with_message("Todo o arquivo foi processado.");
 
     Ok(())
 }

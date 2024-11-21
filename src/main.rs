@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Processa o subcomando invocado
     match matches.subcommand() {
         Some(("transform", sub_matches)) => commands::transform::run(sub_matches)?,
-        Some(("splitter", sub_matches)) => commands::split::run(sub_matches)?,
+        Some(("split", sub_matches)) => commands::split::run(sub_matches)?,
         Some(("join", sub_matches)) => commands::join::run(sub_matches)?,
         _ => println!("Use --help para mais informações."),
     }
