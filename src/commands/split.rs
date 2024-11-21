@@ -1,36 +1,47 @@
-use clap::{Arg, ArgMatches, Command};
 use std::error::Error;
+use std::path::{Path, PathBuf};
+use std::process;
+
+use clap::{Arg, ArgMatches, Command};
 
 pub fn command() -> Command {
     Command::new("split")
         .about("Divide um arquivo CSV em partes menores")
-        .arg(
-            Arg::new("input")
-                .help("Arquivo CSV de entrada")
-                .short('i')
-                .long("input")
-                .value_name("FILE")
-                .required(true),
-        )
-        .arg(
-            Arg::new("lines")
-                .help("Número de linhas por arquivo")
-                .short('l')
-                .long("lines")
-                .value_name("LINES")
-                .required(true),
-        )
+        // .arg(
+        //     Arg::new("split_input")
+        //         .short('i')
+        //         .long("input")
+        //         .help("Arquivo CSV de entrada")
+        //         .value_name("FILE")
+        //         .required(true),
+        // )
+        // .arg(
+        //     Arg::new("split_output")
+        //         .short('o')
+        //         .long("output")
+        //         .help("Arquivo CSV de saída")
+        //         .value_name("FILE")
+        //         .required(true),
+        // )
+        // .arg(
+        //     Arg::new("split_delimiter")
+        //         .short('d')
+        //         .long("delimiter")
+        //         .help("Delimitador do arquivo csv")
+        //         .default_value(";")
+        //         .required(false),
+        // )
 }
 
 pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
-    let input = matches.get_one::<String>("input").unwrap();
-    let lines: usize = matches
-        .get_one::<String>("lines")
-        .unwrap()
-        .parse()
-        .expect("Número inválido");
+    let input = matches.get_one::<PathBuf>("split_input").unwrap();
+    let output = matches.get_one::<PathBuf>("split_output").unwrap();
+    let delimiter = matches.get_one::<char>("split_delimiter").unwrap();
 
-    println!("Dividindo arquivo: {} em partes de {} linhas", input, lines);
-    // Implementar lógica de divisão...
+    if !input.exists() {
+        println!("O arquivo não existe, por gentileza informe um arquivo válido.");
+        process::exit(1);
+    }
+
     Ok(())
 }

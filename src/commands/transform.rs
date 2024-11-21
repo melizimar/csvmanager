@@ -1,8 +1,11 @@
 use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::process;
+use std::thread;
+use std::time::Duration;
 
 use clap::{Arg, ArgMatches, Command};
+use indicatif::{ProgressBar, ProgressStyle};
 
 pub fn command() -> Command {
     Command::new("transform")
@@ -12,6 +15,7 @@ pub fn command() -> Command {
                 .short('i')
                 .long("input")
                 .help("Arquivo CSV de entrada")
+                .value_name("FILE")
                 .required(true),
         )
         .arg(
@@ -53,6 +57,9 @@ pub fn command() -> Command {
 }
 
 pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
+
+    println!("{:#?}", matches);
+
     let input = matches.get_one::<PathBuf>("input").unwrap();
     let output = matches.get_one::<PathBuf>("output").unwrap();
     let delimiter = matches.get_one::<char>("delimiter").unwrap();
@@ -91,6 +98,25 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
         println!("O arquivo não existe, por gentileza informe um arquivo válido.");
         process::exit(1);
     }
+
+    // Processamento
+    // Criar barra de progresso
+    let progress_bar = ProgressBar::new(10);
+    progress_bar.set_style(
+        ProgressStyle::default_bar()
+            .template(
+                "Transformando arquivo...{pos}/{len}\n[{elapsed_precise}] [{wide_bar}] ({percent}%) ",
+            )
+            .unwrap(),
+    );
+
+    for i in 1..10{
+        progress_bar.inc(1);
+        thread::sleep(Duration::from_millis(500));
+    }
+
+    progress_bar.finish_with_message("Todo o arquivo foi foi processado.");
+
 
     Ok(())
 }
