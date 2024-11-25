@@ -5,6 +5,7 @@ use std::thread;
 use std::time::Duration;
 
 use clap::{Arg, ArgMatches, Command};
+use polars::prelude::*;
 use indicatif::{ProgressBar, ProgressStyle};
 
 pub fn command() -> Command {
@@ -71,52 +72,62 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
         .get_many::<String>("normalize")
         .map(|values| values.cloned().collect());
 
-    // match uppercase {
-    //     Some(fields) => println!("Campos a serem transformados em uppercase {:?}", fields),
-    //     None => (),
-    // }
-
-    if let Some(fields) = uppercase {
-        println!("Campos a serem transformados em uppercase {:?}", fields)
-    }
-
-    // match lowercase {
-    //     Some(fields) => println!("Campos a serem transformados em lowercase {:?}", fields),
-    //     None => (),
-    // }
-
-    if let Some(fields) = lowercase {
-        println!("Campos a serem transformados em lowercase {:?}", fields)
-    }
-
-    // match normalize {
-    //     Some(fields) => println!("Campos a serem transformados em normalize {:?}", fields),
-    //     None => (),
-    // }
-
-    if let Some(fields) = normalize {
-        println!("Campos a serem transformados em normalize {:?}", fields)
-    }
-
     if !PathBuf::from(input).exists() {
         println!("O arquivo não existe, por gentileza informe um arquivo válido.");
         process::exit(1);
     }
 
+    let mut lf = LazyCsvReader::new(input)
+        .with_has_header(true)
+        .with_separator(b';')
+        .with_ignore_errors(true)
+        .finish()?;
+    // .collect()?;
+
+    if let Some(fields) = uppercase {
+        let uppercase_transformations: Vec<Expr> = fields
+            .iter()
+            .map(|col_name| col(col_name).str().to_uppercase()
+            .alias(col_name))
+            .collect();
+        lf = lf.with_columns(uppercase_transformations);
+
+    }
+
+    if let Some(fields) = lowercase {
+        let lowercase_transformations: Vec<Expr> = fields
+            .iter()
+            .map(|col_name| col(col_name).str().to_lowercase()
+            .alias(col_name))
+            .collect();
+        lf = lf.with_columns(lowercase_transformations);
+
+    }
+
+    if let Some(fields) = normalize {
+        println!("Campos a serem transformados em normalize {:?}", fields)
+        // implementar função para normalização
+    }
+
+    let df = lf.collect()?;
+    let csv_length = u64::try_from(df.height())?;
+
     // Processamento
-    let progress_bar = ProgressBar::new(10);
+    let progress_bar = ProgressBar::new(/*csv_length*/20);
     progress_bar.set_style(
         ProgressStyle::default_bar()
-            .template(
-                "Transformando arquivo...{pos}/{len}\n[{elapsed_precise}] [{wide_bar}] ({percent}%) ",
-            )
-            .unwrap(),
+        .template(
+            "Transformando arquivo...{pos}/{len}\n[{elapsed_precise}] [{wide_bar}] ({percent}%) ",
+        )
+        .unwrap(),
     );
 
-    for _i in 1..10 {
+    for _ in 1..20/*csv_length*/ {
         progress_bar.inc(1);
-        thread::sleep(Duration::from_millis(100));
+        thread::sleep(Duration::from_millis(50));
     }
+
+    println!("{:?}", df);
 
     progress_bar.finish_with_message("Todo o arquivo foi processado.");
 
