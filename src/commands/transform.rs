@@ -3,10 +3,12 @@ use std::path::PathBuf;
 use std::process;
 use std::thread;
 use std::time::Duration;
+// use std::collections::HashMap;
 
 use clap::{Arg, ArgMatches, Command};
-use polars::prelude::*;
+use deunicode::deunicode;
 use indicatif::{ProgressBar, ProgressStyle};
+use polars::prelude::*;
 
 pub fn command() -> Command {
     Command::new("transform")
@@ -62,15 +64,8 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
     let _output = matches.get_one::<String>("output").unwrap();
     let _delimiter = matches.get_one::<String>("delimiter").unwrap();
 
-    let uppercase: Option<Vec<String>> = matches
-        .get_many::<String>("uppercase")
-        .map(|values| values.cloned().collect());
-    let lowercase: Option<Vec<String>> = matches
-        .get_many::<String>("lowercase")
-        .map(|values| values.cloned().collect());
-    let normalize: Option<Vec<String>> = matches
-        .get_many::<String>("normalize")
-        .map(|values| values.cloned().collect());
+    // Capturando a sequência dos argumentos inseridos
+    let transform_order: Vec<_> = matches.ids().map(|id| id.as_str()).collect();
 
     if !PathBuf::from(input).exists() {
         println!("O arquivo não existe, por gentileza informe um arquivo válido.");
@@ -82,38 +77,52 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
         .with_separator(b';')
         .with_ignore_errors(true)
         .finish()?;
-    // .collect()?;
 
-    if let Some(fields) = uppercase {
-        let uppercase_transformations: Vec<Expr> = fields
-            .iter()
-            .map(|col_name| col(col_name).str().to_uppercase()
-            .alias(col_name))
-            .collect();
-        lf = lf.with_columns(uppercase_transformations);
+    for arg in transform_order {
+        match arg {
+            "uppercase" => {
+                let uppercase: Option<Vec<String>> = matches
+                    .get_many::<String>("uppercase")
+                    .map(|values| values.cloned().collect());
 
-    }
+                if let Some(fields) = uppercase {
+                    let uppercase_transformations: Vec<Expr> = fields
+                        .iter()
+                        .map(|col_name| col(col_name).str().to_uppercase().alias(col_name))
+                        .collect();
+                    lf = lf.with_columns(uppercase_transformations);
+                }
+            }
+            "lowercase" => {
+                let lowercase: Option<Vec<String>> = matches
+                    .get_many::<String>("lowercase")
+                    .map(|values| values.cloned().collect());
 
-    if let Some(fields) = lowercase {
-        let lowercase_transformations: Vec<Expr> = fields
-            .iter()
-            .map(|col_name| col(col_name).str().to_lowercase()
-            .alias(col_name))
-            .collect();
-        lf = lf.with_columns(lowercase_transformations);
-
-    }
-
-    if let Some(fields) = normalize {
-        println!("Campos a serem transformados em normalize {:?}", fields)
-        // implementar função para normalização
+                if let Some(fields) = lowercase {
+                    let lowercase_transformations: Vec<Expr> = fields
+                        .iter()
+                        .map(|col_name| col(col_name).str().to_lowercase().alias(col_name))
+                        .collect();
+                    lf = lf.with_columns(lowercase_transformations);
+                }
+            }
+            "normalize" => {
+                let normalize: Option<Vec<String>> = matches
+                    .get_many::<String>("normalize")
+                    .map(|values| values.cloned().collect());
+                if let Some(fields) = normalize {
+                    println!("Implementar normalize");
+                }
+            }
+            _ => ()
+        }
     }
 
     let df = lf.collect()?;
     let csv_length = u64::try_from(df.height())?;
 
     // Processamento
-    let progress_bar = ProgressBar::new(/*csv_length*/20);
+    let progress_bar = ProgressBar::new(csv_length);
     progress_bar.set_style(
         ProgressStyle::default_bar()
         .template(
@@ -122,12 +131,10 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
         .unwrap(),
     );
 
-    for _ in 1..20/*csv_length*/ {
+    for _ in 1..csv_length {
         progress_bar.inc(1);
         thread::sleep(Duration::from_millis(50));
     }
-
-    println!("{:?}", df);
 
     progress_bar.finish_with_message("Todo o arquivo foi processado.");
 
