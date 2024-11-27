@@ -62,7 +62,9 @@ pub fn run(matches: &ArgMatches) -> Result<(), Box<dyn Error>> {
     let progress_bar = ProgressBar::new(10);
     progress_bar.set_style(
         ProgressStyle::default_bar()
-            .template("Juntando os arquivos...{pos}/{len}\n[{elapsed_precise}] [{wide_bar}] ({percent}%) ",)
+            .template(
+                "Juntando os arquivos...{pos}/{len}\n[{elapsed_precise}] {wide_bar} ({percent}%) ",
+            )
             .unwrap(),
     );
 
